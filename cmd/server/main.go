@@ -15,5 +15,8 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	mux.Handle("/", api.HelloHandler)
+	mux.HandleFunc("/", api.HelloHandler)
+
+	fmt.Printf("Server running on http://localhost:%s\n", port)
+	log.Fatal(http.ListenAndServe(":"+port, mux))
 }
