@@ -1,20 +1,17 @@
-# Build stage
-FROM golang:1.22-alpine AS builder
-
-RUN apk add --no-cache git
+FROM golang:1.24.3 AS builder
 
 WORKDIR /app
 
 COPY go.mod ./
-COPY go.sum ./
 RUN go mod download
 
 COPY . .
 
-RUN go build -o server ./cmd/server
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o server ./cmd/server
 
 FROM alpine:latest
-WORKDIR /root/
+
+WORKDIR /app
 
 COPY --from=builder /app/server .
 

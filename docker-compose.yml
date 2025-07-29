@@ -1,0 +1,9 @@
+version: '3.9'
+
+services:
+  app:
+    image: secure-devops-boilerplate
+    build: .
+    ports:
+      - "9090:3000"
+    restart: unless-stopped
