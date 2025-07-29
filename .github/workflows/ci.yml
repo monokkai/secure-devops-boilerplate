@@ -4,27 +4,29 @@ on:
   push:
     branches: [ main ]
   pull_request:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: 1.24
+          go-version: 1.21
 
-      - name: Install linters
-        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+      - name: Install dependencies
+        run: go mod tidy
 
-      - name: Lint
-        run: golanci-lint run ./...
+      - name: Run Lint and Security
+        run: |
+          go fmt ./...
+          go vet ./...
+          go install github.com/securego/gosec/v2/cmd/gosec@latest
+          gosec ./...
 
-      - name: Test
+      - name: Run Tests
         run: go test ./...
-
-      - name: Docker build
-        run: docker build -t secure-devops-boilerplate

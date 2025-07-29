@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 set -e
-golanci-lint run ./...
-staticchek ./...
+
+echo "Running pre-commit hooks..."
+pre-commit run --all-files
