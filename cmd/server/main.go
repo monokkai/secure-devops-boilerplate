@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"secure-devops-boilerplate/internal/api"
+	"secure-devops-boilerplate/internal/auth"
 	"time"
 )
 
@@ -25,6 +26,16 @@ func main() {
 	mux.HandleFunc("/ready", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "READY")
 	})
+
+	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+		token, _ := auth.GenerateJWT("admin")
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, `{"token": "%s"}`, token)
+	})
+
+	secureMux := http.NewServeMux()
+	secureMux.HandleFunc("/secure", api.SecureHandler)
+	secureMux.Handle("/secure", auth.JWTMiddleware(secureMux))
 
 	srv := &http.Server{
 		Addr:         ":" + port,
