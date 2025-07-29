@@ -13,11 +13,10 @@ import (
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "9090"
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", api.HelloHandler)
 
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "OK")
@@ -35,7 +34,9 @@ func main() {
 
 	secureMux := http.NewServeMux()
 	secureMux.HandleFunc("/secure", api.SecureHandler)
-	secureMux.Handle("/secure", auth.JWTMiddleware(secureMux))
+	mux.Handle("/secure", auth.JWTMiddleware(secureMux))
+
+	mux.HandleFunc("/", api.HelloHandler)
 
 	srv := &http.Server{
 		Addr:         ":" + port,
